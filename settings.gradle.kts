@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Google Auth Sample"
+rootProject.name = "GoogleAuthSample"
 include(":app")
  
