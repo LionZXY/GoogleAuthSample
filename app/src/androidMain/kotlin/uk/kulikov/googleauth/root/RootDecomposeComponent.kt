@@ -1,5 +1,6 @@
 package uk.kulikov.googleauth.root
 
+import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -14,7 +15,8 @@ import uk.kulikov.googleauth.core.decompose.DecomposeComponent
 import uk.kulikov.googleauth.signin.SignInDecomposeComponent
 
 class RootDecomposeComponent(
-    componentContext: ComponentContext
+    componentContext: ComponentContext,
+    private val context: Context
 ) : DecomposeComponent, ComponentContext by componentContext {
     protected val navigation = StackNavigation<RootScreenConfig>()
 
@@ -42,6 +44,6 @@ class RootDecomposeComponent(
         config: RootScreenConfig,
         componentContext: ComponentContext
     ) = when (config) {
-        RootScreenConfig.SignIn -> SignInDecomposeComponent(componentContext)
+        RootScreenConfig.SignIn -> SignInDecomposeComponent(componentContext, context)
     }
 }

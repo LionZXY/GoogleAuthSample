@@ -89,6 +89,9 @@ dependencies {
     implementation(libs.decompose.composeExtension)
     implementation(libs.essenty.lifecycle)
     implementation(libs.essenty.lifecycle.coroutines)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play)
+    implementation(libs.identity)
 
 
     testImplementation(libs.junit)
