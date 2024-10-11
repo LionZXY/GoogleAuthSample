@@ -11,6 +11,7 @@ import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.router.stack.StackNavigation
 import com.arkivanov.decompose.router.stack.childStack
 import com.arkivanov.decompose.value.Value
+import uk.kulikov.googleauth.complete.CompleteSignInDecomposeComponent
 import uk.kulikov.googleauth.core.decompose.DecomposeComponent
 import uk.kulikov.googleauth.signin.SignInDecomposeComponent
 
@@ -18,7 +19,7 @@ class RootDecomposeComponent(
     componentContext: ComponentContext,
     private val context: Context
 ) : DecomposeComponent, ComponentContext by componentContext {
-    protected val navigation = StackNavigation<RootScreenConfig>()
+    private val navigation = StackNavigation<RootScreenConfig>()
 
     private val stack: Value<ChildStack<RootScreenConfig, DecomposeComponent>> = childStack(
         source = navigation,
@@ -44,6 +45,7 @@ class RootDecomposeComponent(
         config: RootScreenConfig,
         componentContext: ComponentContext
     ) = when (config) {
-        RootScreenConfig.SignIn -> SignInDecomposeComponent(componentContext, context)
+        RootScreenConfig.SignIn -> SignInDecomposeComponent(componentContext, context, navigation)
+        is RootScreenConfig.CompleteSignIn -> CompleteSignInDecomposeComponent(config.result)
     }
 }

@@ -12,16 +12,22 @@ import androidx.credentials.exceptions.GetCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import uk.kulikov.googleauth.complete.AuthStateResult
 import uk.kulikov.googleauth.core.decompose.DecomposeViewModel
 
 private const val WEB_CLIENT_ID =
     "955063396605-n2920r9aj783l7m7dgv5jh2r57ammag6.apps.googleusercontent.com"
 private const val TAG = "SignInViewModel"
 
-class SignInViewModel(private val context: Context) : DecomposeViewModel() {
+class SignInViewModel(
+    private val context: Context,
+    private val onComplete: (AuthStateResult) -> Unit
+) : DecomposeViewModel() {
     private val credentialManager = CredentialManager.create(context)
 
     private val authStateFlow = MutableStateFlow<AuthState>(AuthState.NotStarted)
@@ -49,7 +55,7 @@ class SignInViewModel(private val context: Context) : DecomposeViewModel() {
         }
     }
 
-    private fun handleSignIn(result: GetCredentialResponse) {
+    private suspend fun handleSignIn(result: GetCredentialResponse) {
         // Handle the successfully returned credential.
         val credential = result.credential
 
@@ -60,9 +66,9 @@ class SignInViewModel(private val context: Context) : DecomposeViewModel() {
                 // validate and authenticate
                 val responseJson = credential.authenticationResponseJson
 
-                authStateFlow.value = AuthState.PassKey(
-                    json = responseJson
-                )
+                withContext(Dispatchers.Main) {
+                    onComplete(AuthStateResult.PassKey(json = responseJson))
+                }
             }
 
             // Password credential
@@ -71,10 +77,14 @@ class SignInViewModel(private val context: Context) : DecomposeViewModel() {
                 val username = credential.id
                 val password = credential.password
 
-                authStateFlow.value = AuthState.LoginPassword(
-                    login = username,
-                    password = password
-                )
+                withContext(Dispatchers.Main) {
+                    onComplete(
+                        AuthStateResult.LoginPassword(
+                            login = username,
+                            password = password
+                        )
+                    )
+                }
             }
 
             // GoogleIdToken credential
@@ -86,11 +96,15 @@ class SignInViewModel(private val context: Context) : DecomposeViewModel() {
                         val googleIdTokenCredential = GoogleIdTokenCredential
                             .createFrom(credential.data)
 
-                        authStateFlow.value = AuthState.OAuth(
-                            id = googleIdTokenCredential.id,
-                            jwtToken = googleIdTokenCredential.idToken,
-                            displayName = googleIdTokenCredential.displayName
-                        )
+                        withContext(Dispatchers.Main) {
+                            onComplete(
+                                AuthStateResult.OAuth(
+                                    id = googleIdTokenCredential.id,
+                                    jwtToken = googleIdTokenCredential.idToken,
+                                    displayName = googleIdTokenCredential.displayName
+                                )
+                            )
+                        }
                     } catch (e: GoogleIdTokenParsingException) {
                         Log.e(TAG, "Received an invalid google id token response", e)
                     }
