@@ -2,13 +2,18 @@ package uk.kulikov.googleauth.signin
 
 import android.content.Context
 import android.util.Log
+import androidx.credentials.CreatePublicKeyCredentialRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
+import androidx.credentials.GetPasswordOption
+import androidx.credentials.GetPublicKeyCredentialOption
 import androidx.credentials.PasswordCredential
 import androidx.credentials.PublicKeyCredential
 import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.webauthn.PublicKeyCredentialCreationOptions
+import androidx.credentials.webauthn.PublicKeyCredentialRequestOptions
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
@@ -38,8 +43,10 @@ class SignInViewModel(
         val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
             .setServerClientId(WEB_CLIENT_ID)
             .build()
+        val passwordOption = GetPasswordOption()
         val request = GetCredentialRequest.Builder()
             .addCredentialOption(googleIdOption)
+            .addCredentialOption(passwordOption)
             .build()
 
         viewModelScope.launch {
