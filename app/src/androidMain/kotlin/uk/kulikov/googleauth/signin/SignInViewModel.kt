@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import uk.kulikov.googleauth.complete.AuthStateResult
 import uk.kulikov.googleauth.core.decompose.DecomposeViewModel
+import uk.kulikov.googleauth.utils.BSBApi
 
 private const val WEB_CLIENT_ID =
     "955063396605-n2920r9aj783l7m7dgv5jh2r57ammag6.apps.googleusercontent.com"
@@ -102,6 +103,8 @@ class SignInViewModel(
                         // authenticate on your server.
                         val googleIdTokenCredential = GoogleIdTokenCredential
                             .createFrom(credential.data)
+
+                        BSBApi.jwtAuth(googleIdTokenCredential.idToken)
 
                         withContext(Dispatchers.Main) {
                             onComplete(

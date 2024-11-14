@@ -93,6 +93,12 @@ dependencies {
     implementation(libs.androidx.credentials.play)
     implementation(libs.identity)
 
+    implementation(libs.ktor.client)
+    implementation(libs.ktor.negotiation)
+    implementation(libs.ktor.serialization)
+    implementation(libs.ktor.client.logging)
+    implementation(libs.ktor.client.auth)
+    implementation(libs.ktor.client.cio)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
